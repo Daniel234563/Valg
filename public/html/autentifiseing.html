@@ -302,7 +302,7 @@
                     fetch(`/insertValue/${localStorage.getItem("parti")}`).then(
                         (response) => {
                             if (response.ok) {
-                                document.getElementsByClassName('lds-roller').style.display = "block";
+                                document.getElementsByClassName('.lds-roller').style.display = "block";
                                 window.location.href = "/charts";
                             } else {
                                 console.log("det virker ikke");
