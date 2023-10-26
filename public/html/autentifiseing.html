@@ -177,12 +177,19 @@
 
         firebase.initializeApp(firebaseConfig);
 
+
+        // Added by kimL, unknow if works
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+
+        
+
         // Create a Recaptcha verifier instance globally
         // Calls submitPhoneNumberAuth() when the captcha is verified
         window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
             "recaptcha-container",
             {
-                size: "normal",
+                size: "normal",     
                 callback: function (response) {
                     submitPhoneNumberAuth();
                 }
