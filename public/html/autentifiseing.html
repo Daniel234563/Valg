@@ -147,6 +147,15 @@
     <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-auth.js"></script>
 
     <script>
+
+        $(document).bind("contextmenu", function (e) {
+                e.preventDefault();
+            });
+        $(document).keydown(function (e) {
+                if (e.which === 123) {
+                    return false;
+                }
+            });
         // Paste the config your copied earlier
         document.getElementById('login-form').addEventListener('submit', function (event) {
                 event.preventDefault();
