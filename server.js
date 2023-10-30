@@ -64,10 +64,6 @@ app.listen(4000, async function () {
 });
 
 async function insertValue(id) {
-  if (await sql.harStemt(req.session.passport.user)) {
-    res.status(500).json({ error: "You have already voted." });
-    return;
-  }
   try {
     const pool = await sql.connect(sqlConfig);
     console.log("Inserting value for partiId:", id);
