@@ -4,11 +4,9 @@ gridDivs.forEach(function (div) {
     let text;
 
     if (confirm("Er du sikker?") == true) {
-      // Hent id-verdien fra bildets id-attributt
+      const partiId = div.getAttribute("dbid");
+      localStorage.setItem("parti", partiId);
       window.location.href = "/auth";
-      localStorage.setItem("parti", div.getAttribute("dbid"));
-    } else {
-      console.log("det virker ikke");
     }
   });
 });

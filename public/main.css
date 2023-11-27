@@ -1,6 +1,5 @@
-*{
-    margin: 0 auto;
-}
+
+
 h1 {
     text-align: center;
     position: relative;
@@ -22,59 +21,54 @@ h1 {
     background: lightgray;
 }
 
-            body {
-               background: #f0f8ff;
-           }
-    
-           img {
-               width: 4Vw;
-           }
-    
-           .grid {
-               display: grid;
-               grid-template-columns: 1fr 1fr 1fr;
-               grid-gap: 1em;
-               grid-auto-columns: 100%;
-               position: absolute;
-               top: 12em;
-               left: 15em;
-               border-radius: 50%;
-           }
-    
-           .grid div {
-               box-shadow: 0 0 20px lightgray;
-           }
-    
-           .grid>div {
-               padding: 1em;
-               width: 250px;
-               text-align: center;
-               background: white;
-               transition: ease 1s;
-           }
-    
-    
-           .grid > div:hover {
-               background: lightgray;
-               transition: 0.6s cubic-bezier(.2, 0, 0, 1.6);
-               transform: translateY(-10%);
-               opacity: 40%;
-               transition: opacity 1s;
-               cursor: pointer;
-            transition: ease 0.6s;
-    
-           }
-    
-    
-           .grid>div h2 {
-               opacity: 0%;
-               position: absolute;
-               top: 0.6em;
-               left: 2em;
-           }
-    
-           .grid>div:hover h2 {
-               opacity: 100% !important;
-               transition: opacity 1s;
-           }
+img {
+    width: 4Vw;
+}
 
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 1em;
+    grid-auto-columns: 100%;
+    position: absolute;
+    top: 12em;
+    left: 15em;
+    border-radius: 50%;
+}
+
+.grid div {
+    box-shadow: 0 0 20px lightgray;
+}
+
+.grid>div {
+    padding: 1em;
+    width: 250px;
+    text-align: center;
+    background: white;
+    transition: ease 1s;
+}
+
+
+.grid > div:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transition: 0.6s cubic-bezier(.2, 0, 0, 1.6);
+    transform: translateY(-10%);
+    opacity: 40%;
+    transition: opacity 1s;
+    cursor: pointer;
+transition: ease 0.6s;
+
+}
+
+
+.grid>div h2 {
+    opacity: 0%;
+    position: absolute;
+    top: 0.6em;
+    left: 2em;
+}
+
+.grid>div:hover h2 {
+    opacity: 100% !important;
+    transition: opacity 1s;
+}

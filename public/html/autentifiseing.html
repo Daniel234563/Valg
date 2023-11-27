@@ -6,245 +6,138 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Document</title>
-    <style media="screen">
-        *,
-        *:before,
-        *:after {
-            padding: 0;
-            margin: 0;
-            box-sizing: border-box;
-        }
+    <link rel="stylesheet" href="../css/auth.css">
     
-    
-        .background .shape {
-            height: 200px;
-            width: 200px;
-            position: absolute;
-            border-radius: 50%;
-        }
-    
-        .shape:first-child {
-            background: linear-gradient(#1845ad,
-                    #23a2f6);
-            left: -80px;
-            top: -80px;
-        }
-    
-        .shape:last-child {
-            background: linear-gradient(to right,
-                    #ff512f,
-                    #f09819);
-            right: -30px;
-            bottom: -80px;
-        }
-    
-        form {
-            height: 520px;
-            width: 400px;
-            background-color: rgba(255, 255, 255, 0.13);
-            position: absolute;
-            transform: translate(-50%, -50%);
-            top: 50%;
-            left: 50%;
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
-            padding: 50px 35px;
-        }
-        #recaptcha-container {
-            display: block;
-            height: 50px;
-            width: 100%;
-            padding: 0 10px;
-            margin-top: 8px;
-        }
-        form * {
-            font-family: 'Poppins', sans-serif;
-            color: #ffffff;
-            letter-spacing: 0.5px;
-            outline: none;
-            border: none;
-        }
-        
-        form h3 {
-            font-size: 32px;
-            font-weight: 500;
-            line-height: 42px;
-            text-align: center;
-        }
-    
-        label {
-            display: block;
-            margin-top: 30px;
-            font-size: 16px;
-            font-weight: 500;
-        }
-    
-        input {
-            display: block;
-            height: 50px;
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.07);
-            border-radius: 3px;
-            padding: 0 10px;
-            margin-top: 8px;
-            font-size: 14px;
-            font-weight: 300;
-        }
-    
-        ::placeholder {
-            color: #e5e5e5;
-        }
-    
-        button {
-            margin-top: 50px;
-            width: 100%;
-            background-color: #ffffff;
-            color: #080710;
-            padding: 15px 0;
-            font-size: 18px;
-            font-weight: 600;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-    
-    </style>
-    <script src="https://www.gstatic.com/firebasejs/ui/5.0.0/firebase-ui-auth.js"></script>
-    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/5.0.0/firebase-ui-auth.css" />
 </head>
 
 <body>
     
-    <!-- Add two inputs for "phoneNumber" and "code" -->
-    <form id="login-form">
-    <h3>authentification</h3>
-    <label for="phoneNumber">Telefon</label>
-    <input type="tel" id="phoneNumber" placeholder="" value="+47" />
-    <button id="sign-in-button" onclick="submitPhoneNumberAuth()">
-        Submit
-    </button>
     
-    
-    <label for="code">Kode</label>
-    <input type="text" id="code">
-    
-    <button id="confirm-code" onclick="submitPhoneNumberAuthCode()">
-        Enter Code
-    </button>
-    <div id="recaptcha-container"></div>
+    <form onsubmit="event.preventDefault(); return false;">
+        <input type="tel" id="phoneNumber" placeholder="+47"/>
+        <input type="text" id="code" placeholder="" />
+        <button id="sign-in-button" onclick="submitPhoneNumberAuth()">
+            SIGN IN WITH PHONE
+        </button>
+        <button id="confirm-code" onclick="submitPhoneNumberAuthCode()">
+            ENTER CODE
+        </button>
     </form>
 
-    <!-- Add two buttons to submit the inputs -->
-    
-    
-    <!-- Add a container for reCaptcha -->
-    
+    <div id="recaptcha-container"></div>
+<script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-auth.js"></script>
+<script>
 
-    <!-- Add the latest firebase dependecies from CDN -->
-    <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-auth.js"></script>
+    var confirmationResult;
+    var userUID;
+    var userLoggedIn = false;
+    var firebaseConfig = {
+    apiKey: "AIzaSyDOXgJ2tPr_iCLMR0yTuYk5Q3t2BlFe4P4",
+        authDomain: "valgprosjekt-7b0c4.firebaseapp.com",
+        projectId: "valgprosjekt-7b0c4",
+        storageBucket: "valgprosjekt-7b0c4.appspot.com",
+        messagingSenderId: "956553947793",
+        appId: "1:956553947793:web:df5c663d5b0f0b7f56ad30",
+        measurementId: "G-0T0P258sZ4H"
+        };
 
-    <script>
-
-        document.bind("contextmenu", function (e) {
-                e.preventDefault();
-            });
-        document.keydown(function (e) {
-                if (e.which === 123) {
-                    return false;
-                }
-            });
-        // Paste the config your copied earlier
-        document.getElementById('login-form').addEventListener('submit', function (event) {
-                event.preventDefault();
-                // Koden for å validere reCAPTCHA og sende forespørsel til Firebase her
-            });
-
-        const firebaseConfig = {
-                apiKey: "AIzaSyDOXgJ2tPr_iCLMR0yTuYk5Q3t2BlFe4P4",
-                authDomain: "valgprosjekt-7b0c4.firebaseapp.com",
-                projectId: "valgprosjekt-7b0c4",
-                storageBucket: "valgprosjekt-7b0c4.appspot.com",
-                messagingSenderId: "956553947793",
-                appId: "1:956553947793:web:df5c663d5b0f0b7f56ad30",
-                measurementId: "G-0T0P258Z4H"
-            };
-
-        firebase.initializeApp(firebaseConfig);
-
-
-        // Added by kimL, unknow if works
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-
-        
-
-        // Create a Recaptcha verifier instance globally
-        // Calls submitPhoneNumberAuth() when the captcha is verified
-        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-            "recaptcha-container",
-            {
-                size: "normal",     
-                callback: function (response) {
-                    submitPhoneNumberAuth();
-                }
+    firebase.initializeApp(firebaseConfig);
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+        "recaptcha-container",
+        {
+            size: "normal",
+            callback: function (response) {
+                submitPhoneNumberAuth();
             }
-        );
-
-        // This function runs when the 'sign-in-button' is clicked
-        // Takes the value from the 'phoneNumber' input and sends SMS to that phone number
-        function submitPhoneNumberAuth() {
-            var phoneNumber = document.getElementById("phoneNumber").value;
-            document.getElementById('sign-in-button').style.display = 'none';
-            var appVerifier = window.recaptchaVerifier;
-            firebase
-                .auth()
-                .signInWithPhoneNumber(phoneNumber, appVerifier)
-                .then(function (confirmationResult) {
-                    window.confirmationResult = confirmationResult;
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
         }
-
-        // This function runs when the 'confirm-code' button is clicked
-        // Takes the value from the 'code' input and submits the code to verify the phone number
-        // Return a user object if the authentication was successful, and auth is complete
-        function submitPhoneNumberAuthCode() {
+    );
+    function submitPhoneNumberAuth() {
+        var phoneNumber = document.getElementById("phoneNumber").value;
+        var appVerifier = window.recaptchaVerifier;
+        firebase
+            .auth()
+            .signInWithPhoneNumber(phoneNumber, appVerifier)
+            .then(function (confirmationResult) {
+                window.confirmationResult = confirmationResult;
+                document.getElementById('confirm-code').style.display = 'block';
+                document.getElementById('code').style.display = 'block';
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+    function submitPhoneNumberAuthCode(button) {
             var code = document.getElementById("code").value;
             confirmationResult
                 .confirm(code)
                 .then(function (result) {
                     var user = result.user;
-                    console.log(user);
-                    fetch(`/insertValue/${localStorage.getItem("parti")}`).then(
-                        (response) => {
-                            if (response.ok) {
-                                window.location.href = "/charts";
-                            } else {
-                                console.log("det virker ikke");
-                            }
-                        }
-                    );
+                    userUID = user.uid
+                    console.log("Bruker ID:", userUID);
+                    addVoteIfPossible(user)
                 })
                 .catch(function (error) {
                     console.log(error);
                 });
+            button.disabled = true;
+        }
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            console.log("USER LOGGED IN");
+            userLoggedIn = true
+            addVoteIfPossible(user);
+        } else {
+    
+            console.log("USER NOT LOGGED IN");
+        }
+    });
+    function addVoteIfPossible(user) {
+            const partiId = localStorage.getItem("parti");
+            if (partiId && userUID && userLoggedIn) {
+    
+                addVote();
+            } else {
+                console.log("PartiId, userUID, or userLoggedIn is missing.")
+            }
         }
 
-        //This function runs everytime the auth state changes. Use to verify if the user is logged in
-        firebase.auth().onAuthStateChanged(function (user) {
-            if (user) {
-                console.log("USER LOGGED IN");
+function addVote() {
+const partiId = localStorage.getItem("parti");
+if (partiId && userUID) {
+    fetch(`/setUserUID/${userUID}`)
+        .then((response) => {
+            if (response.ok) {
+                console.log("Value inserted successfully.");
             } else {
-                // No user is signed in.
-                console.log("USER NOT LOGGED IN");
+                console.log("Det virker ikke");
             }
+        })
+        .catch((error) => {
+            console.error(error);
         });
-    </script>
+    fetch(`/updateValue/${partiId}/${userUID}`, {
+        method: "POST",
+    })
+        .then(async (response) => {
+            if (response.ok) {
+                alert("Stemmen din er registrert.");
+                location.href = "/charts";
+    
+            } else {
+                alert("Du kan bare stemme én gang.");
+                const errorText = await response.text();
+            }
+        })
+        .catch((error) => {
+            console.log("Feil ved oppdatering av stemme:", error);
+        });
+} else {
+    console.log("PartiId and brukerid are required.")
+}
+}
+</script>
+    
 </body>
 
 </html>
