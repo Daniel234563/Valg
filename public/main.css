@@ -1,74 +1,67 @@
-
-
 h1 {
-    text-align: center;
-    position: relative;
-    top: 20px;
-    font-size: 100px;
-    color: lightblue;
-
+  text-align: center;
+  position: relative;
+  top: 20px;
+  font-size: 100px;
+  color: lightblue;
 }
-
-
-
 
 .all {
-    top: 40px;
-    width: 600px;
-    position: relative;
+  width: 600px;
+  position: relative;
+  margin: 40px auto; /* Sentraliserer .all containeren horisontalt */
 }
-.all  :hover {
-    background: lightgray;
+.all :hover {
+  background: lightgray;
 }
 
 img {
-    width: 4Vw;
+  width: 4vw;
+}
+
+.grid-container {
+  display: flex;
+  justify-content: center; /* Sentraliserer grid horisontalt */
+  align-items: center; /* Sentraliserer grid vertikalt */
+  min-height: 100vh; /* Sørger for at containeren fyller hele høyden */
 }
 
 .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-gap: 1em;
-    grid-auto-columns: 100%;
-    position: absolute;
-    top: 12em;
-    left: 15em;
-    border-radius: 50%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-gap: 1em;
+  width: 100%;
+  max-width: 900px; /* Setter en maksimal bredde for gridet */
+  margin: 0 auto; /* Sentraliserer gridet */
 }
 
 .grid div {
-    box-shadow: 0 0 20px lightgray;
+  box-shadow: 0 0 20px lightgray;
 }
 
-.grid>div {
-    padding: 1em;
-    width: 250px;
-    text-align: center;
-    background: white;
-    transition: ease 1s;
+.grid > div {
+  padding: 1em;
+  text-align: center;
+  background: white;
+  transition: ease 1s;
 }
-
 
 .grid > div:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transition: 0.6s cubic-bezier(.2, 0, 0, 1.6);
-    transform: translateY(-10%);
-    opacity: 40%;
-    transition: opacity 1s;
-    cursor: pointer;
-transition: ease 0.6s;
-
+  background: rgba(255, 255, 255, 0.3);
+  transition: 0.6s cubic-bezier(0.2, 0, 0, 1.6);
+  transform: translateY(-10%);
+  opacity: 40%;
+  cursor: pointer;
 }
 
-
-.grid>div h2 {
-    opacity: 0%;
-    position: absolute;
-    top: 0.6em;
-    left: 2em;
+.grid > div h2 {
+  opacity: 0%;
+  position: absolute;
+  top: 0.6em;
+  left: 2em;
 }
 
-.grid>div:hover h2 {
-    opacity: 100% !important;
-    transition: opacity 1s;
+.grid > div:hover h2 {
+  opacity: 100% !important;
+  transition: opacity 1s;
 }
