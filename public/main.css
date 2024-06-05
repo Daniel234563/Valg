@@ -1,14 +1,21 @@
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Fyller hele høyden av visningsporten */
+  flex-direction: column;
+}
+
 h1 {
   text-align: center;
-  position: relative;
-  top: 20px;
-  font-size: 100px;
+  font-size: 160px;
   color: lightblue;
+  margin: 20px 0; /* Legger til margin for å unngå overlapping */
 }
 
 .all {
   width: 600px;
-  position: relative;
   margin: 40px auto; /* Sentraliserer .all containeren horisontalt */
 }
 .all :hover {
@@ -19,20 +26,27 @@ img {
   width: 4vw;
 }
 
+.main-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
 .grid-container {
   display: flex;
-  justify-content: center; /* Sentraliserer grid horisontalt */
-  align-items: center; /* Sentraliserer grid vertikalt */
-  min-height: 100vh; /* Sørger for at containeren fyller hele høyden */
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   grid-gap: 1em;
-  width: 100%;
   max-width: 900px; /* Setter en maksimal bredde for gridet */
-  margin: 0 auto; /* Sentraliserer gridet */
 }
 
 .grid div {
@@ -64,4 +78,23 @@ img {
 .grid > div:hover h2 {
   opacity: 100% !important;
   transition: opacity 1s;
+}
+
+.kommuner {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 12px 16px;
+  z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
 }

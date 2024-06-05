@@ -1,12 +1,13 @@
 const express = require("express");
 const app = express();
 const sql = require("mssql");
+const path = require("path");
 
 const sqlConfig = {
   user: "skole",
   password: "skole2023",
   server: "glemmen.bergersen.dk",
-  database: "Daniel_Skyrud",
+  database: "Daniel_Eksamen_2",
   port: 4729,
   options: {
     trustServerCertificate: true,
@@ -16,7 +17,7 @@ const sqlConfig = {
 async function getParti() {
   try {
     const pool = await sql.connect(sqlConfig);
-    const result = await pool.request().query("select * from parti");
+    const result = await pool.request().query("SELECT * FROM Parti");
     const data = result.recordset;
     console.log(data);
     return data;
@@ -30,7 +31,7 @@ async function setUserUID(userUID) {
   try {
     const pool = await sql.connect(sqlConfig);
     console.log(userUID);
-    const checkQuery = `SELECT COUNT(*) AS count FROM bruker WHERE userUID = '${userUID}'`;
+    const checkQuery = `SELECT COUNT(*) AS count FROM bruker WHERE brukerId = '${userUID}'`;
     const checkResult = await pool.request().query(checkQuery);
     const personExists = checkResult.recordset[0].count > 0;
 
@@ -40,7 +41,7 @@ async function setUserUID(userUID) {
       const request = pool.request();
       request.input("userUID", sql.NVarChar, userUID);
       const result = await request.query(
-        "INSERT INTO bruker (userUID) VALUES (@userUID)"
+        "INSERT INTO bruker (brukerId) VALUES (@userUID)"
       );
       console.log("SQL Query Result:", result);
       console.log("Value inserted successfully.");
@@ -54,37 +55,49 @@ async function setUserUID(userUID) {
 async function getBruker() {
   try {
     const pool = await sql.connect(sqlConfig);
-    const result = await pool.request().query("select * from bruker");
+    const result = await pool.request().query("SELECT * FROM bruker");
     console.log(result.recordset);
   } catch (err) {
     console.error(err);
   }
 }
 
-async function clearDB() {
+async function updateValue(partiId, userUID) {
   try {
     const pool = await sql.connect(sqlConfig);
-    const result = await pool.request().query("delete from bruker");
-    console.log(result.recordset);
-  } catch (err) {
-    console.error(err);
-  }
-}
 
-async function updateValue(id, userUID) {
-  try {
-    const pool = await sql.connect(sqlConfig);
+    // Check if user has already voted
+    const checkVoteQuery = `SELECT COUNT(*) AS count FROM Votes WHERE brukerId = '${userUID}' AND partiId = ${partiId}`;
+    const checkVoteResult = await pool.request().query(checkVoteQuery);
+    const hasVoted = checkVoteResult.recordset[0].count > 0;
+
+    if (hasVoted) {
+      console.log("Brukeren har allerede stemt.");
+      throw new Error("Brukeren har allerede stemt.");
+    }
+
+    // Proceed to update the vote count
     const result = await pool
       .request()
-      .input("id", sql.NVarChar, id)
-      .query(`UPDATE parti SET stemmer = stemmer + 1 WHERE id = @id`);
-
+      .input("partiId", sql.Int, partiId)
+      .query(
+        `UPDATE Stemmer SET AntallStemmer = AntallStemmer + 1 WHERE PartiId = @partiId`
+      );
     console.log("SQL Query Result:", result);
+
+    // Register the vote
+    await pool
+      .request()
+      .input("userUID", sql.NVarChar, userUID)
+      .input("partiId", sql.Int, partiId)
+      .query(
+        `INSERT INTO Votes (brukerId, partiId) VALUES (@userUID, @partiId)`
+      );
 
     if (result.rowsAffected[0] > 0) {
       console.log("Value updated successfully.");
     } else {
-      console.log("No rows were updated for the provided ID.");
+      console.log("No rows were updated for the provided ID and kommune.");
     }
   } catch (err) {
     console.error("Error updating value:", err);
@@ -110,37 +123,12 @@ app.get("/setUserUID/:userUID", async (req, res) => {
 app.post("/updateValue/:id/:userUID", async (req, res) => {
   try {
     const { id, userUID } = req.params;
-    const pool = await sql.connect(sqlConfig);
 
-    const checkQuery = `SELECT COUNT(*) AS count FROM bruker WHERE userUID = '${userUID}'`;
-    const checkResult = await pool.request().query(checkQuery);
-    const personExists = checkResult.recordset[0].count > 0;
-
-    if (personExists) {
-      return res.status(400).json({
-        success: false,
-        message: "Brukeren eksisterer i databasen.",
-      });
-    }
-    console.log("Inserting value for partiId:", id);
-
-    const result = await pool
-      .request()
-      .input("id", sql.NVarChar, id)
-      .query(`UPDATE parti SET stemmer = stemmer + 1 WHERE id = @id`);
-
-    console.log("SQL Query Result:", result);
-
-    if (result.rowsAffected[0] > 0) {
-      console.log("Value updated successfully for partiId:", id);
-      res.json({ success: true });
-    } else {
-      console.log("No rows were updated for the provided ID:", id);
-      res.json({ success: false });
-    }
+    await updateValue(id, userUID);
+    res.json({ success: true });
   } catch (error) {
     console.error("Error updating value:", error);
-    res.status(500).json({ error: "Feil med henting." });
+    res.status(500).json({ error: "Feil med oppdatering." });
   }
 });
 
@@ -162,23 +150,23 @@ app.get("/getparti", async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "feil med henting." });
+    res.status(500).json({ error: "Feil med henting." });
   }
 });
 
-app.use(express.static(__dirname + "/public"));
-app.use(express.static(__dirname + "/src"));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "src")));
 
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/public/index.html");
 });
-port = 3001;
+
+const port = 3001;
 app.listen(port, async function () {
-  console.log(`serveren startet på ${port}`);
+  console.log(`Serveren startet på port ${port}`);
   try {
     await getParti();
     await getBruker();
-    //clearDB();
   } catch (err) {
     console.error(err);
   }
