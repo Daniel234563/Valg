@@ -6,7 +6,6 @@ const bodyParser = require("body-parser");
 
 app.use(bodyParser.json());
 app.use(express.urlencoded());
-app.use(express.json);
 
 async function createHash() {
   try {
@@ -50,6 +49,7 @@ app.post("/ValgtKommune", async (req, res) => {
         "SELECT StemmerPerKommune.AntallStemmer from StemmerPerKommune where KommuneID = @KommuneID"
       );
     console.log(result.recordset);
+    res.json(result.recordset);
   } catch (err) {
     console.error(err);
   }
@@ -255,7 +255,7 @@ app.use(express.static(__dirname + "/public"));
 app.use(express.static(__dirname + "/src"));
 
 app.get("/", function (req, res) {
-  res.sendFile(__dirname + "public/html/index.html");
+  res.sendFile(__dirname + "/public/html/index.html");
 });
 port = 3000;
 app.listen(port, async function () {

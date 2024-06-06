@@ -29,7 +29,7 @@ function lagChart(data) {
     { parti: "Venstre", count: data[4].AntallStemmer },
     { parti: "KRF", count: data[5].AntallStemmer },
     { parti: "MDG", count: data[6].AntallStemmer },
-    { parti: "Senterpartiet", count: data[7].AntallStemme },
+    { parti: "Senterpartiet", count: data[7].AntallStemmer },
     { parti: "SV", count: data[8].AntallStemmer },
   ];
 
