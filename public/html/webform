@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css"
+      rel="stylesheet"
+    />
+    <title>Document</title>
+  </head>
+  <body>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      #tableId {
+        max-width: fit-content;
+        margin: 0 auto;
+      }
+
+      .button-container {
+        position: absolute;
+        margin-left: 0px;
+        margin-top: 420px;
+      }
+    </style>
+    <table id="tableId" contenteditable="false">
+      <thead>
+        <tr>
+          <th>PartiID</th>
+          <th>Partinavn</th>
+          <th>Kontaktadresse</th>
+          <th>Postnummer</th>
+          <th>Epost</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="button-container">
+      <button
+        style="background-color: white; text-align: center"
+        onclick="editTable()"
+      >
+        Edit
+      </button>
+      <button
+        style="background-color: white; text-align: center"
+        id="saveButton"
+        onclick="saveChanges()"
+      >
+        Save
+      </button>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("#tableId").DataTable({
+          ajax: {
+            url: "/getParti",
+            dataSrc: "",
+          },
+          columns: [
+            { data: "PartiId" },
+            { data: "PartiNavn" },
+            { data: "KontaktAdresse" },
+            { data: "PostNummer" },
+            { data: "Epost" },
+          ],
+        });
+      });
+
+      // funksjon som tillater modifisering av HTML-tabellen.
+      function editTable() {
+        let pw = prompt("Krever Passord: ");
+        // Example of handling the response from the server
+        fetch("/signIn", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ passord: pw }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Success:", data.message);
+            $("#tableId").attr("contenteditable", "true");
+          })
+          .catch((error) => console.error("Error:", error));
+        $("#tableId").attr("contenteditable", "false");
+      }
+
+      // Lagrer modifisert data i en tabelData-Array.
+      function saveChanges() {
+        const tableData = [];
+        $("#tableId tbody tr").each(function () {
+          const rowData = {
+            PartiId: $(this).find("td").eq(0).text(),
+            PartiNavn: $(this).find("td").eq(1).text(),
+            KontaktAdresse: $(this).find("td").eq(2).text(),
+            PostNummer: $(this).find("td").eq(3).text(),
+            Epost: $(this).find("td").eq(4).text(),
+          };
+          tableData.push(rowData);
+        });
+
+        // Sender table-dataen som POST-forespørsel til serveren.
+        fetch("/changeInfo", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(tableData),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Success:", data);
+            // Reload table data
+            table.ajax.reload();
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+    </script>
+  </body>
+</html>

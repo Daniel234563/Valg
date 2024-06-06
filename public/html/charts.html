@@ -1,15 +1,33 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <title>Resultater</title>
-</head>
+  </head>
 
-<body>
-    <div class="chart-container" style="position: relative; height:80vh; width:160vw; margin-left: 8em; margin-top: 4em;">
-        <canvas id="myChart" type="module"></canvas>
+  <body>
+    <label for="choose">Velg din kommune</label>
+    <select name="velg" id="choose">
+      <option value="1">Fredrikstad</option>
+      <option value="2">Sarpsborg</option>
+      <option value="3">Moss</option>
+    </select>
+    <div
+      class="chart-container"
+      style="
+        position: relative;
+        height: 80vh;
+        width: 160vw;
+        margin-left: 8em;
+        margin-top: 4em;
+      "
+    >
+      <canvas id="myChart" type="module"></canvas>
     </div>
-    <script src="/chartJs" type="module" style="margin: 0; position: absolute; margin-top: 200px;"></script>
+    <script
+      src="/chartJs"
+      type="module"
+      style="margin: 0; position: absolute; margin-top: 200px"
+    ></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</body>
+  </body>
 </html>
