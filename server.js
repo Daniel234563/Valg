@@ -3,7 +3,16 @@ const app = express();
 const sql = require("mssql");
 const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
-
+const sqlConfig = {
+  user: "skole",
+  password: "skole2023",
+  server: "glemmen.bergersen.dk",
+  database: "Daniel_Eksamen_2",
+  port: 4729,
+  options: {
+    trustServerCertificate: true,
+  },
+};
 app.use(bodyParser.json());
 app.use(express.urlencoded());
 
@@ -37,73 +46,6 @@ async function getKommuneStemmer() {
     console.error(err);
   }
 }
-
-app.post("/ValgtKommune", async (req, res) => {
-  try {
-    const { KommuneID } = req.body;
-    const pool = await sql.connect(sqlConfig);
-    const result = await pool
-      .request()
-      .input("KommuneID", sql.Int, KommuneID)
-      .query(
-        "SELECT StemmerPerKommune.AntallStemmer from StemmerPerKommune where KommuneID = @KommuneID"
-      );
-    console.log(result.recordset);
-    res.json(result.recordset);
-  } catch (err) {
-    console.error(err);
-  }
-});
-
-app.post("/signIn", async (req, res) => {
-  try {
-    const { passord } = req.body;
-    const pool = await sql.connect(sqlConfig);
-    const result = await pool.request().query("SELECT hash FROM Passord");
-
-    const storedHash = result.recordset[0].hash;
-
-    // Sammenlign det hasjede passordet med lagret hash
-    const isCorrectPassword = await bcrypt.compare(passord, storedHash);
-
-    if (!isCorrectPassword) {
-      return res.status(401).json({ message: "Feil passord" });
-    } else {
-      return res.status(200).json({ message: "Korrekt passord" });
-    }
-  } catch (err) {
-    console.error("Error checking password:", err);
-    res.status(500).json({ error: "Error checking password" });
-  }
-});
-
-const sqlConfig = {
-  user: "skole",
-  password: "skole2023",
-  server: "glemmen.bergersen.dk",
-  database: "Daniel_Eksamen_2",
-  port: 4729,
-  options: {
-    trustServerCertificate: true,
-  },
-};
-
-// HTML/JS-ruter
-app.get("/charts", function (req, res) {
-  res.sendFile(__dirname + "/public/html/charts.html");
-});
-
-app.get("/auth", function (req, res) {
-  res.sendFile(__dirname + "/public/html/autentifiseing.html");
-});
-
-app.get("/webform", function (req, res) {
-  res.sendFile(__dirname + "/public/html/webform.html");
-});
-
-app.get("/chartJs", function (req, res) {
-  res.sendFile(__dirname + "/src/charts.js");
-});
 
 async function getParti() {
   try {
@@ -156,6 +98,55 @@ async function changeInfo(updatedData) {
   }
 }
 
+async function getBruker() {
+  try {
+    const pool = await sql.connect(sqlConfig);
+    const result = await pool.request().query("select * from bruker");
+    console.log(result.recordset);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+app.post("/ValgtKommune", async (req, res) => {
+  try {
+    const { KommuneID } = req.body;
+    const pool = await sql.connect(sqlConfig);
+    const result = await pool
+      .request()
+      .input("KommuneID", sql.Int, KommuneID)
+      .query(
+        "SELECT StemmerPerKommune.AntallStemmer from StemmerPerKommune where KommuneID = @KommuneID"
+      );
+    console.log(result.recordset);
+    res.json(result.recordset);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+app.post("/signIn", async (req, res) => {
+  try {
+    const { passord } = req.body;
+    const pool = await sql.connect(sqlConfig);
+    const result = await pool.request().query("SELECT hash FROM Passord");
+
+    const storedHash = result.recordset[0].hash;
+
+    // Sammenlign det hasjede passordet med lagret hash
+    const isCorrectPassword = await bcrypt.compare(passord, storedHash);
+
+    if (!isCorrectPassword) {
+      return res.status(401).json({ message: "Feil passord" });
+    } else {
+      return res.status(200).json({ message: "Korrekt passord" });
+    }
+  } catch (err) {
+    console.error("Error checking password:", err);
+    res.status(500).json({ error: "Error checking password" });
+  }
+});
+
 app.post("/changeInfo", async (req, res) => {
   const updatedData = req.body;
   try {
@@ -190,15 +181,7 @@ async function setUserUID(userUID) {
   }
 }
 
-async function getBruker() {
-  try {
-    const pool = await sql.connect(sqlConfig);
-    const result = await pool.request().query("select * from bruker");
-    console.log(result.recordset);
-  } catch (err) {
-    console.error(err);
-  }
-}
+
 
 app.get("/setUserUID/:userUID", async (req, res) => {
   try {
@@ -267,6 +250,22 @@ app.get("/getParti", async (req, res) => {
 app.use(express.static(__dirname + "/public"));
 app.use(express.static(__dirname + "/src"));
 
+// HTML/JS-ruter
+app.get("/charts", function (req, res) {
+  res.sendFile(__dirname + "/public/html/charts.html");
+});
+
+app.get("/auth", function (req, res) {
+  res.sendFile(__dirname + "/public/html/autentifiseing.html");
+});
+
+app.get("/webform", function (req, res) {
+  res.sendFile(__dirname + "/public/html/webform.html");
+});
+
+app.get("/chartJs", function (req, res) {
+  res.sendFile(__dirname + "/src/charts.js");
+});
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/public/html/index.html");
 });
