@@ -255,7 +255,7 @@ app.use(express.static(__dirname + "/public"));
 app.use(express.static(__dirname + "/src"));
 
 app.get("/", function (req, res) {
-  res.sendFile(__dirname + "/public/html/index.html");
+  res.sendFile(__dirname + "public/html/index.html");
 });
 port = 3000;
 app.listen(port, async function () {
