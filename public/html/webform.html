@@ -79,7 +79,7 @@
       // funksjon som tillater modifisering av HTML-tabellen.
       function editTable() {
         let pw = prompt("Krever Passord: ");
-        // Example of handling the response from the server
+        // Eksempel på håndtering av responsen fra serveren
         fetch("/signIn", {
           method: "POST",
           headers: {
@@ -89,11 +89,16 @@
         })
           .then((response) => response.json())
           .then((data) => {
-            console.log("Success:", data.message);
-            $("#tableId").attr("contenteditable", "true");
+            if (data.message === "Korrekt passord") {
+              console.log("Success:", data.message);
+              $("#tableId").attr("contenteditable", "true");
+            } else {
+              console.error("Error:", data.message);
+            }
           })
-          .catch((error) => console.error("Error:", error));
-        $("#tableId").attr("contenteditable", "false");
+          .catch((error) => {
+            console.error("Error:", error);
+          });
       }
 
       // Lagrer modifisert data i en tabelData-Array.

@@ -105,6 +105,19 @@ app.get("/chartJs", function (req, res) {
   res.sendFile(__dirname + "/src/charts.js");
 });
 
+async function getParti() {
+  try {
+    const pool = await sql.connect(sqlConfig);
+    const result = await pool.request().query("SELECT * from Parti");
+    const data = result.recordset;
+    console.log(data);
+    return data;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
 async function getData() {
   try {
     const pool = await sql.connect(sqlConfig);
@@ -243,7 +256,7 @@ app.post("/updateValue/:id/:userUID", async (req, res) => {
 
 app.get("/getParti", async (req, res) => {
   try {
-    const data = await getData();
+    const data = await getParti();
     res.json(data);
   } catch (error) {
     console.error(error);
@@ -261,7 +274,7 @@ port = 3000;
 app.listen(port, async function () {
   console.log(`serveren startet på ${port}`);
   try {
-    await getData();
+    await getParti();
     await getBruker();
   } catch (err) {
     console.error(err);
