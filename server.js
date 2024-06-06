@@ -40,7 +40,7 @@ async function getKommuneStemmer() {
 
 app.post("/ValgtKommune", async (req, res) => {
   try {
-    const { KommuneID } = req.body.KommuneID;
+    const { KommuneID } = req.body;
     const pool = await sql.connect(sqlConfig);
     const result = await pool
       .request()
