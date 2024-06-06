@@ -1,13 +1,13 @@
 document.getElementById("choose").addEventListener("change", function () {
-  const KommuneID = this.options[this.selectedIndex].id;
-  console.log("Valgt kommuneID:", KommuneID);
+  const FylkeID = this.options[this.selectedIndex].id;
+  console.log("Valgt kommuneID:", FylkeID);
 
-  fetch("/ValgtKommune", {
+  fetch("/ValgtFylke", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ KommuneID: KommuneID }),
+    body: JSON.stringify({ FylkeID: FylkeID }),
   })
     .then((response) => response.json())
     .then((data) => {

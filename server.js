@@ -3,6 +3,7 @@ const app = express();
 const sql = require("mssql");
 const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
+
 const sqlConfig = {
   user: "skole",
   password: "skole2023",
@@ -13,6 +14,7 @@ const sqlConfig = {
     trustServerCertificate: true,
   },
 };
+
 app.use(bodyParser.json());
 app.use(express.urlencoded());
 
@@ -39,7 +41,7 @@ async function getKommuneStemmer() {
     const result = await pool
       .request()
       .query(
-        "SELECT Parti.PartiNavn, StemmerPerKommune.AntallStemmer, StemmerPerKommune.KommuneID, Parti.PartiId, Kommuner.KommuneNavn FROM StemmerPerKommune INNER JOIN Kommuner ON Kommuner.KommuneID = StemmerPerKommune.KommuneID INNER JOIN Parti ON Parti.PartiId = StemmerPerKommune.PartiId;"
+        "SELECT Parti.PartiNavn, StemmerPerFylke.AntallStemmer, StemmerPerFylke.FylkeID, Parti.PartiId, Fylker.FylkeNavn FROM StemmerPerFylke INNER JOIN Fylker ON Fylker.FylkeID = StemmerPerFylke.FylkeID INNER JOIN Parti ON Parti.PartiId = StemmerPerFylke.PartiId;"
       );
     console.log(result.recordset);
   } catch (err) {
@@ -108,15 +110,15 @@ async function getBruker() {
   }
 }
 
-app.post("/ValgtKommune", async (req, res) => {
+app.post("/ValgtFylke", async (req, res) => {
   try {
-    const { KommuneID } = req.body;
+    const { FylkeID } = req.body;
     const pool = await sql.connect(sqlConfig);
     const result = await pool
       .request()
-      .input("KommuneID", sql.Int, KommuneID)
+      .input("FylkeID", sql.Int, FylkeID)
       .query(
-        "SELECT StemmerPerKommune.AntallStemmer from StemmerPerKommune where KommuneID = @KommuneID"
+        "SELECT StemmerPerFylke.AntallStemmer from StemmerPerFylke where FylkeID = @FylkeID"
       );
     console.log(result.recordset);
     res.json(result.recordset);
@@ -173,7 +175,7 @@ async function setUserUID(userUID) {
         "INSERT INTO bruker (brukerId) VALUES (@userUID)"
       );
       console.log("SQL Query Result:", result);
-      console.log("Value inserted successfully.");
+      console.log("UserUID inserted successfully.");
     }
   } catch (err) {
     console.error("Error inserting userUID:", err);
@@ -198,28 +200,20 @@ app.get("/setUserUID/:userUID", async (req, res) => {
   }
 });
 
-app.post("/updateValue/:id/:userUID", async (req, res) => {
+app.post("/updateValue/:id/:FylkeID", async (req, res) => {
   try {
-    const { id, userUID } = req.params;
+    const { id, FylkeID } = req.params;
+    console.log("Incoming request URL:", req.originalUrl);
     const pool = await sql.connect(sqlConfig);
 
-    const checkQuery = `SELECT COUNT(*) AS count FROM bruker WHERE brukerId = '${userUID}'`;
-    const checkResult = await pool.request().query(checkQuery);
-    const personExists = checkResult.recordset[0].count > 0;
-
-    if (personExists) {
-      return res.status(400).json({
-        success: false,
-        message: "Brukeren eksisterer i databasen.",
-      });
-    }
     console.log("Inserting value for partiId:", id);
 
     const result = await pool
       .request()
-      .input("id", sql.NVarChar, id)
+      .input("id", sql.Int, id)
+      .input("FylkeID", sql.Int, FylkeID)
       .query(
-        `UPDATE Stemmer SET AntallStemmer = AntallStemmer + 1 WHERE PartiId = @id`
+        `UPDATE StemmerPerFylke SET AntallStemmer = AntallStemmer + 1 WHERE PartiId = @id and FylkeID = @FylkeID`
       );
 
     console.log("SQL Query Result:", result);
@@ -236,6 +230,8 @@ app.post("/updateValue/:id/:userUID", async (req, res) => {
     res.status(500).json({ error: "Feil med henting." });
   }
 });
+
+
 
 app.get("/getParti", async (req, res) => {
   try {

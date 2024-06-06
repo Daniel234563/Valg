@@ -19,9 +19,11 @@
         <button id="sign-in-button" onclick="submitPhoneNumberAuth()">
             SIGN IN WITH PHONE
         </button>
-        <button id="confirm-code" onclick="submitPhoneNumberAuthCode()">
+        <button id="confirm-code" onclick="submitPhoneNumberAuthCode(this)">
             ENTER CODE
         </button>
+        
+        
     </form>
 
     <div id="recaptcha-container"></div>
@@ -68,20 +70,22 @@
             });
     }
     function submitPhoneNumberAuthCode(button) {
-            var code = document.getElementById("code").value;
-            confirmationResult
-                .confirm(code)
-                .then(function (result) {
-                    var user = result.user;
-                    userUID = user.uid
-                    console.log("Bruker ID:", userUID);
-                    addVoteIfPossible(user)
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
-            button.disabled = true;
-        }
+    var code = document.getElementById("code").value;
+    confirmationResult
+        .confirm(code)
+        .then(function (result) {
+            var user = result.user;
+            userUID = user.uid
+            console.log("Bruker ID:", userUID);
+            addVoteIfPossible(user)
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    button.disabled = true; // Now `button` references the button element
+}
+
+
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             console.log("USER LOGGED IN");
